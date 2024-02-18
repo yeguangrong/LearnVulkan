@@ -113,7 +113,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
 	{
-
+		HMODULE hMod = LoadLibraryA("C:\\Program Files\\RenderDoc\\renderdoc.dll");
 		title = "Vulkan Example - Basic indexed triangle";
 		// To keep things simple, we don't use the UI overlay
 		settings.overlay = false;
