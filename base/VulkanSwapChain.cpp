@@ -205,11 +205,11 @@ void VulkanSwapChain::initSurface(uint32_t width, uint32_t height)
 * @param device Logical representation of the device to create the swapchain for
 *
 */
-void VulkanSwapChain::connect(VkInstance instance, VkPhysicalDevice physicalDevice, VkDevice device)
+void VulkanSwapChain::connect(VkInstance instance, VkPhysicalDevice physicalDevice, VkDevice logicalDevice)
 {
 	this->instance = instance;
 	this->physicalDevice = physicalDevice;
-	this->device = device;
+	this->device = logicalDevice;
 	fpGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
 	fpGetPhysicalDeviceSurfaceCapabilitiesKHR =  reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"));
 	fpGetPhysicalDeviceSurfaceFormatsKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceFormatsKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceFormatsKHR"));

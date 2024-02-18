@@ -13,7 +13,7 @@ void VulkanRaytracingSample::updateRenderPass()
 	// Update the default render pass with different color attachment load ops to keep attachment contents
 	// With this change, we can e.g. draw an UI on top of the ray traced scene
 
-	vkDestroyRenderPass(device, renderPass, nullptr);
+	vkDestroyRenderPass(vulkanDevice->logicalDevice, renderPass, nullptr);
 
 	std::array<VkAttachmentDescription, 2> attachments = {};
 	// Color attachment
@@ -81,7 +81,7 @@ void VulkanRaytracingSample::updateRenderPass()
 	renderPassInfo.pSubpasses = &subpassDescription;
 	renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
 	renderPassInfo.pDependencies = dependencies.data();
-	VK_CHECK_RESULT(vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
+	VK_CHECK_RESULT(vkCreateRenderPass(vulkanDevice->logicalDevice, &renderPassInfo, nullptr, &renderPass));
 }
 
 void VulkanRaytracingSample::enableExtensions()
@@ -182,9 +182,9 @@ void VulkanRaytracingSample::createAccelerationStructure(AccelerationStructure& 
 
 void VulkanRaytracingSample::deleteAccelerationStructure(AccelerationStructure& accelerationStructure)
 {
-	vkFreeMemory(device, accelerationStructure.memory, nullptr);
-	vkDestroyBuffer(device, accelerationStructure.buffer, nullptr);
-	vkDestroyAccelerationStructureKHR(device, accelerationStructure.handle, nullptr);
+	vkFreeMemory(vulkanDevice->logicalDevice, accelerationStructure.memory, nullptr);
+	vkDestroyBuffer(vulkanDevice->logicalDevice, accelerationStructure.buffer, nullptr);
+	vkDestroyAccelerationStructureKHR(vulkanDevice->logicalDevice, accelerationStructure.handle, nullptr);
 }
 
 uint64_t VulkanRaytracingSample::getBufferDeviceAddress(VkBuffer buffer)
@@ -199,9 +199,9 @@ void VulkanRaytracingSample::createStorageImage(VkFormat format, VkExtent3D exte
 {
 	// Release ressources if image is to be recreated
 	if (storageImage.image != VK_NULL_HANDLE) {
-		vkDestroyImageView(device, storageImage.view, nullptr);
-		vkDestroyImage(device, storageImage.image, nullptr);
-		vkFreeMemory(device, storageImage.memory, nullptr);
+		vkDestroyImageView(vulkanDevice->logicalDevice, storageImage.view, nullptr);
+		vkDestroyImage(vulkanDevice->logicalDevice, storageImage.image, nullptr);
+		vkFreeMemory(vulkanDevice->logicalDevice, storageImage.memory, nullptr);
 		storageImage = {};
 	}
 
@@ -267,16 +267,16 @@ void VulkanRaytracingSample::prepare()
 	deviceFeatures2.pNext = &accelerationStructureFeatures;
 	vkGetPhysicalDeviceFeatures2(physicalDevice, &deviceFeatures2);
 	// Get the function pointers required for ray tracing
-	vkGetBufferDeviceAddressKHR = reinterpret_cast<PFN_vkGetBufferDeviceAddressKHR>(vkGetDeviceProcAddr(device, "vkGetBufferDeviceAddressKHR"));
-	vkCmdBuildAccelerationStructuresKHR = reinterpret_cast<PFN_vkCmdBuildAccelerationStructuresKHR>(vkGetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresKHR"));
-	vkBuildAccelerationStructuresKHR = reinterpret_cast<PFN_vkBuildAccelerationStructuresKHR>(vkGetDeviceProcAddr(device, "vkBuildAccelerationStructuresKHR"));
-	vkCreateAccelerationStructureKHR = reinterpret_cast<PFN_vkCreateAccelerationStructureKHR>(vkGetDeviceProcAddr(device, "vkCreateAccelerationStructureKHR"));
-	vkDestroyAccelerationStructureKHR = reinterpret_cast<PFN_vkDestroyAccelerationStructureKHR>(vkGetDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR"));
-	vkGetAccelerationStructureBuildSizesKHR = reinterpret_cast<PFN_vkGetAccelerationStructureBuildSizesKHR>(vkGetDeviceProcAddr(device, "vkGetAccelerationStructureBuildSizesKHR"));
-	vkGetAccelerationStructureDeviceAddressKHR = reinterpret_cast<PFN_vkGetAccelerationStructureDeviceAddressKHR>(vkGetDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR"));
-	vkCmdTraceRaysKHR = reinterpret_cast<PFN_vkCmdTraceRaysKHR>(vkGetDeviceProcAddr(device, "vkCmdTraceRaysKHR"));
-	vkGetRayTracingShaderGroupHandlesKHR = reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesKHR>(vkGetDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR"));
-	vkCreateRayTracingPipelinesKHR = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(vkGetDeviceProcAddr(device, "vkCreateRayTracingPipelinesKHR"));
+	vkGetBufferDeviceAddressKHR = reinterpret_cast<PFN_vkGetBufferDeviceAddressKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkGetBufferDeviceAddressKHR"));
+	vkCmdBuildAccelerationStructuresKHR = reinterpret_cast<PFN_vkCmdBuildAccelerationStructuresKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkCmdBuildAccelerationStructuresKHR"));
+	vkBuildAccelerationStructuresKHR = reinterpret_cast<PFN_vkBuildAccelerationStructuresKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkBuildAccelerationStructuresKHR"));
+	vkCreateAccelerationStructureKHR = reinterpret_cast<PFN_vkCreateAccelerationStructureKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkCreateAccelerationStructureKHR"));
+	vkDestroyAccelerationStructureKHR = reinterpret_cast<PFN_vkDestroyAccelerationStructureKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkDestroyAccelerationStructureKHR"));
+	vkGetAccelerationStructureBuildSizesKHR = reinterpret_cast<PFN_vkGetAccelerationStructureBuildSizesKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkGetAccelerationStructureBuildSizesKHR"));
+	vkGetAccelerationStructureDeviceAddressKHR = reinterpret_cast<PFN_vkGetAccelerationStructureDeviceAddressKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkGetAccelerationStructureDeviceAddressKHR"));
+	vkCmdTraceRaysKHR = reinterpret_cast<PFN_vkCmdTraceRaysKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkCmdTraceRaysKHR"));
+	vkGetRayTracingShaderGroupHandlesKHR = reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkGetRayTracingShaderGroupHandlesKHR"));
+	vkCreateRayTracingPipelinesKHR = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(vkGetDeviceProcAddr(vulkanDevice->logicalDevice, "vkCreateRayTracingPipelinesKHR"));
 	// Update the render pass to keep the color attachment contents, so we can draw the UI on top of the ray traced output
 	if (!rayQueryOnly) {
 		updateRenderPass();

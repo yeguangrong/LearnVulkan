@@ -76,7 +76,7 @@ public:
 	void createDirect2DisplaySurface(uint32_t width, uint32_t height);
 #endif
 #endif
-	void connect(VkInstance instance, VkPhysicalDevice physicalDevice, VkDevice device);
+	void connect(VkInstance instance, VkPhysicalDevice physicalDevice, VkDevice logicalDevice);
 	void create(uint32_t* width, uint32_t* height, bool vsync = false, bool fullscreen = false);
 	VkResult acquireNextImage(VkSemaphore presentCompleteSemaphore, uint32_t* imageIndex);
 	VkResult queuePresent(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore = VK_NULL_HANDLE);

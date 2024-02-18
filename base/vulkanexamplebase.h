@@ -119,7 +119,7 @@ protected:
 	/** @brief Optional pNext structure for passing extension structures to device creation */
 	void* deviceCreatepNextChain = nullptr;
 	/** @brief Logical device, application's view of the physical device (GPU) */
-	VkDevice device;
+	//VkDevice logicalDevice;
 	// Handle to the device graphics queue that command buffers are submitted to
 	VkQueue queue;
 	// Depth buffer format (selected during Vulkan initialization)
