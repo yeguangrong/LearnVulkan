@@ -490,14 +490,21 @@ namespace vks
 	*/
 	VkCommandBuffer VulkanDevice::createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin)
 	{
-		VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::commandBufferAllocateInfo(pool, level, 1);
+
+		VkCommandBufferAllocateInfo cmdBufAllocateInfo = VkCommandBufferAllocateInfo();
+		cmdBufAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		cmdBufAllocateInfo.commandPool = pool;
+		cmdBufAllocateInfo.level = level;
+		cmdBufAllocateInfo.commandBufferCount = 1;
+
 		VkCommandBuffer cmdBuffer;
 		VK_CHECK_RESULT(vkAllocateCommandBuffers(logicalDevice, &cmdBufAllocateInfo, &cmdBuffer));
 		// If requested, also start recording for the new command buffer
 		if (begin)
 		{
-			VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
-			VK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo));
+			VkCommandBufferBeginInfo cmdBufferBeginInfo = VkCommandBufferBeginInfo();
+			cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			VK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &cmdBufferBeginInfo));
 		}
 		return cmdBuffer;
 	}

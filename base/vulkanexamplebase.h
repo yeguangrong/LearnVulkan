@@ -133,9 +133,9 @@ protected:
 	// Command buffers used for rendering
 	std::vector<VkCommandBuffer> drawCmdBuffers;
 	// Global render pass for frame buffer writes
-	VkRenderPass renderPass = VK_NULL_HANDLE;
+	VkRenderPass mRenderPass = VK_NULL_HANDLE;
 	// List of available frame buffers (same as number of swap chain images)
-	std::vector<VkFramebuffer>frameBuffers;
+	std::vector<VkFramebuffer> mFrameBuffers;
 	// Active frame buffer index
 	uint32_t currentBuffer = 0;
 	// Descriptor set pool
@@ -145,7 +145,7 @@ protected:
 	// Pipeline cache object
 	VkPipelineCache pipelineCache;
 	// Wraps the swap chain to present images (framebuffers) to the windowing system
-	VulkanSwapChain swapChain;
+	VulkanSwapChain mSwapChain;
 	// Synchronization semaphores
 	struct {
 		// Swap chain image presentation
@@ -397,137 +397,3 @@ public:
 #endif
 };
 
-// OS specific macros for the example main entry points
-#if defined(_WIN32)
-// Windows entry point
-#define VULKAN_EXAMPLE_MAIN()																		\
-VulkanExample *vulkanExample;																		\
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)						\
-{																									\
-	if (vulkanExample != NULL)																		\
-	{																								\
-		vulkanExample->handleMessages(hWnd, uMsg, wParam, lParam);									\
-	}																								\
-	return (DefWindowProc(hWnd, uMsg, wParam, lParam));												\
-}																									\
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)									\
-{																									\
-	for (int32_t i = 0; i < __argc; i++) { VulkanExample::args.push_back(__argv[i]); };  			\
-	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
-	vulkanExample->setupWindow(hInstance, WndProc);													\
-	vulkanExample->prepare();																		\
-	vulkanExample->renderLoop();																	\
-	delete(vulkanExample);																			\
-	return 0;																						\
-}
-#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-// Android entry point
-#define VULKAN_EXAMPLE_MAIN()																		\
-VulkanExample *vulkanExample;																		\
-void android_main(android_app* state)																\
-{																									\
-	vulkanExample = new VulkanExample();															\
-	state->userData = vulkanExample;																\
-	state->onAppCmd = VulkanExample::handleAppCommand;												\
-	state->onInputEvent = VulkanExample::handleAppInput;											\
-	androidApp = state;																				\
-	vks::android::getDeviceConfig();																\
-	vulkanExample->renderLoop();																	\
-	delete(vulkanExample);																			\
-}
-#elif defined(_DIRECT2DISPLAY)
-// Linux entry point with direct to display wsi
-#define VULKAN_EXAMPLE_MAIN()																		\
-VulkanExample *vulkanExample;																		\
-static void handleEvent()                                											\
-{																									\
-}																									\
-int main(const int argc, const char *argv[])													    \
-{																									\
-	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
-	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
-	vulkanExample->prepare();																		\
-	vulkanExample->renderLoop();																	\
-	delete(vulkanExample);																			\
-	return 0;																						\
-}
-#elif defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-#define VULKAN_EXAMPLE_MAIN()																		\
-VulkanExample *vulkanExample;																		\
-static void handleEvent(const DFBWindowEvent *event)												\
-{																									\
-	if (vulkanExample != NULL)																		\
-	{																								\
-		vulkanExample->handleEvent(event);															\
-	}																								\
-}																									\
-int main(const int argc, const char *argv[])													    \
-{																									\
-	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
-	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
-	vulkanExample->setupWindow();					 												\
-	vulkanExample->prepare();																		\
-	vulkanExample->renderLoop();																	\
-	delete(vulkanExample);																			\
-	return 0;																						\
-}
-#elif (defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_HEADLESS_EXT))
-#define VULKAN_EXAMPLE_MAIN()																		\
-VulkanExample *vulkanExample;																		\
-int main(const int argc, const char *argv[])													    \
-{																									\
-	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
-	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
-	vulkanExample->setupWindow();					 												\
-	vulkanExample->prepare();																		\
-	vulkanExample->renderLoop();																	\
-	delete(vulkanExample);																			\
-	return 0;																						\
-}
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-#define VULKAN_EXAMPLE_MAIN()																		\
-VulkanExample *vulkanExample;																		\
-static void handleEvent(const xcb_generic_event_t *event)											\
-{																									\
-	if (vulkanExample != NULL)																		\
-	{																								\
-		vulkanExample->handleEvent(event);															\
-	}																								\
-}																									\
-int main(const int argc, const char *argv[])													    \
-{																									\
-	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
-	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
-	vulkanExample->setupWindow();					 												\
-	vulkanExample->prepare();																		\
-	vulkanExample->renderLoop();																	\
-	delete(vulkanExample);																			\
-	return 0;																						\
-}
-#elif (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
-#if defined(VK_EXAMPLE_XCODE_GENERATED)
-#define VULKAN_EXAMPLE_MAIN()																		\
-VulkanExample *vulkanExample;																		\
-int main(const int argc, const char *argv[])														\
-{																									\
-	@autoreleasepool																				\
-	{																								\
-		for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };				\
-		vulkanExample = new VulkanExample();														\
-		vulkanExample->initVulkan();																\
-		vulkanExample->setupWindow(nullptr);														\
-		vulkanExample->prepare();																	\
-		vulkanExample->renderLoop();																\
-		delete(vulkanExample);																		\
-	}																								\
-	return 0;																						\
-}
-#else
-#define VULKAN_EXAMPLE_MAIN()
-#endif
-#endif

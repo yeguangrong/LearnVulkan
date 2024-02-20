@@ -79,6 +79,11 @@ endfunction(buildExamples)
 
 set(EXAMPLES
 	triangle
+	texture
+	texturemipmapgen
+	multisampling
+	deferred
+	deferredmultisampling
 )
 
 buildExamples()
